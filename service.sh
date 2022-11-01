@@ -127,21 +127,21 @@ net_chk() {
 sd_unbind() {
     if [[ -z ${SDBINDPOINT} ]]; then
         UNBINDPOINT=${BINDPOINT_D}/${remote}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
         UNBINDPOINT=${BINDPOINT_R}/${remote}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
         UNBINDPOINT=${BINDPOINT_W}/${remote}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
         UNBINDPOINT="$SD_BINDPOINT/$remote"
-        su -M -c umount -lf "$UNBINDPOINT" >>/dev/null 2>&1
+        umount -lf "$UNBINDPOINT" >>/dev/null 2>&1
     else
         USER_BINDPOINT=${SDBINDPOINT}
         UNBINDPOINT=${RUNTIME_D}/emulated/${PROFILE}/${USER_BINDPOINT}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
         UNBINDPOINT=${RUNTIME_R}/emulated/${PROFILE}/${USER_BINDPOINT}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
         UNBINDPOINT=${RUNTIME_W}/emulated/${PROFILE}/${USER_BINDPOINT}
-        su -M -c umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
+        umount -lf ${UNBINDPOINT} >>/dev/null 2>&1
     fi
 }
 
@@ -153,24 +153,24 @@ sd_binder() {
 
             BINDPOINT=${BINDPOINT_D}/${remote}
 
-            su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+            mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
 
             BINDPOINT=${BINDPOINT_R}/${remote}
 
             if ! mount | grep -q ${BINDPOINT}; then
-                su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+                mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
             fi
 
             BINDPOINT=${BINDPOINT_W}/${remote}
 
             if ! mount | grep -q ${BINDPOINT}; then
-                su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+                mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
             fi
 
             BINDPOINT="$SD_BINDPOINT/$remote"
 
             if ! mount | grep -q "$BINDPOINT"; then
-                su -M -c mount --bind "$CLOUDROOTMOUNTPOINT/$remote" "$BINDPOINT" >>/dev/null 2>&1
+                mount --bind "$CLOUDROOTMOUNTPOINT/$remote" "$BINDPOINT" >>/dev/null 2>&1
             fi
 
             echo "[$remote] available at: -> [/sdcard/Cloud/${remote}] BINDPOINT=$BINDPOINT"
@@ -181,18 +181,18 @@ sd_binder() {
             USER_BINDPOINT=${SDBINDPOINT}
             BINDPOINT=${RUNTIME_D}/emulated/${PROFILE}/${USER_BINDPOINT}
 
-            su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+            mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
 
             BINDPOINT=${RUNTIME_R}/emulated/${PROFILE}/${USER_BINDPOINT}
 
             if ! mount | grep -q ${BINDPOINT}; then
-                su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+                mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
             fi
 
             BINDPOINT=${RUNTIME_W}/emulated/${PROFILE}/${USER_BINDPOINT}
 
             if ! mount | grep -q ${BINDPOINT}; then
-                su -M -c mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
+                mount --bind ${CLOUDROOTMOUNTPOINT}/${remote} ${BINDPOINT} >>/dev/null 2>&1
             fi
             echo "[$remote] available at: -> [/storage/emulated/${PROFILE}/${SDBINDPOINT}]"
             unset BINDPOINT
@@ -299,7 +299,7 @@ rclone_mount() {
 
     echo "[${remote}] available at: -> [${CLOUDROOTMOUNTPOINT}/${remote}]"
     mkdir -p ${CLOUDROOTMOUNTPOINT}/${remote}
-    su -M -p -c nice -n 19 ionice -c 2 -n 7 ${MODDIR}/rclone mount "${remote}:${SUBPATH}" ${CLOUDROOTMOUNTPOINT}/${remote} --config ${CONFIGFILE} ${RCLONE_PARAMS} --daemon >>/dev/null 2>&1 &
+    nice -n 19 ionice -c 2 -n 7 ${MODDIR}/rclone mount "${remote}:${SUBPATH}" ${CLOUDROOTMOUNTPOINT}/${remote} --config ${CONFIGFILE} ${RCLONE_PARAMS} --daemon >>/dev/null 2>&1 &
 }
 
 COUNT=0
@@ -312,7 +312,7 @@ if [[ ${INTERACTIVE} = 0 ]]; then
 fi
 
 DECRYPT_CHK() {
-    su -M -c ls sdcard | grep -q -w "Android"
+    ls sdcard | grep -q -w "Android"
 }
 
 if [[ ${COUNT} -eq 240 ]] || [[ ! -d /sdcard/Android ]]; then
